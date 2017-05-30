@@ -1,0 +1,12 @@
+name: logstash-conf-d
+summary: Conf.d snipped for logstash
+maintainer: Tilman Baumann <tilman@baumann.name>
+description: |
+  Mimimalist charm for adding custom configuration to logstash
+tags:
+  - logstash
+subordinate: true
+requires:
+  host-system:
+    interface: juju-info
+    scope: container

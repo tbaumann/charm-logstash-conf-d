@@ -1,1 +1,2 @@
 includes: ['layer:basic']
+repo: github.com:tbaumann/charm-logstash-conf-d.git

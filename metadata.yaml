@@ -6,6 +6,10 @@ description: |
 tags:
   - logstash
 subordinate: true
+series:
+  - trusty
+  - xenial
+  - zesty
 requires:
   host-system:
     interface: juju-info

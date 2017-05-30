@@ -3,33 +3,44 @@
 import amulet
 import requests
 import unittest
+import errno
 
 
 class TestCharm(unittest.TestCase):
     def setUp(self):
-        self.d = amulet.Deployment()
-
-        self.d.add('logstash-conf.d')
-        self.d.expose('logstash-conf.d')
+        self.d = amulet.Deployment(series='trusty')
+        self.d.add('logstash', 'cs:trusty/logstash-0')
+        self.d.add('zulu8', 'cs:trusty/zulu8-2')
+        self.d.relate('zulu8:java', 'logstash:java')
+        self.d.expose('logstash')
+        self.d.add('conf-file' charm='logstash-conf-d')
+        self.d.relate('conf-file', 'logstash')
 
         self.d.setup(timeout=900)
         self.d.sentry.wait()
 
-        self.unit = self.d.sentry['logstash-conf.d'][0]
+        self.unit = self.d.sentry['conf-file'][0]
+
+
 
     def test_service(self):
-        # test we can access over http
-        page = requests.get('http://{}'.format(self.unit.info['public-address']))
-        self.assertEqual(page.status_code, 200)
-        # Now you can use self.d.sentry[SERVICE][UNIT] to address each of the units and perform
-        # more in-depth steps. Each self.d.sentry[SERVICE][UNIT] has the following methods:
-        # - .info - An array of the information of that unit from Juju
-        # - .file(PATH) - Get the details of a file on that unit
-        # - .file_contents(PATH) - Get plain text output of PATH file from that unit
-        # - .directory(PATH) - Get details of directory
-        # - .directory_contents(PATH) - List files and folders in PATH on that unit
-        # - .relation(relation, service:rel) - Get relation data from return service
 
-        
+        # Conf file exists
+        subject = self.d.sentry['conf-file'][0]
+        subject.file('/etc/logstash/conf.d/conf-file.conf')
+
+
+        self.d.unrelate('conf-file', 'logstash')
+        self.d.setup(timeout=60)
+        self.d.sentry.wait()
+        except:
+            subject.file('/etc/logstash/conf.d/conf-file.conf')
+        except IOError as e:
+            if e.errno == errno.ENOENT:
+                pass
+            else:
+                raise e
+
+
 if __name__ == '__main__':
     unittest.main()

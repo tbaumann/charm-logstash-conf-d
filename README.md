@@ -5,7 +5,7 @@ This will allow you to use the logstash charm with custom configurations.
 
 # Usage
 
-juju deploy logstash-conf_d logstash-output-file
+juju deploy logstash-conf-d logstash-output-file
 
 juju add-relation logstash logstash-output-file
 
